@@ -6,10 +6,8 @@ type CardProps = {
   className?: string;
 };
 
-const Card: FC<CardProps> = (props) => {
-  return (
-    <div className={`${styles.card} ${props.className}`}>{props.children}</div>
-  );
+const Card: FC<CardProps> = ({ children, className = "" }) => {
+  return <div className={`${styles.card} ${className}`}>{children}</div>;
 };
 
 export default Card;
