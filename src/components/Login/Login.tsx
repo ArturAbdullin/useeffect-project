@@ -16,23 +16,28 @@ const Login: FC<LoginProps> = (props) => {
   const [formIsValid, setFormIsValid] = useState<boolean>(false);
 
   useEffect(() => {
-    setFormIsValid(
-      isEmailValid(enteredEmail) && isPasswordValid(enteredPassword)
-    );
+    const formValidationTimeout = setTimeout(() => {
+      console.log('checking validity');
+      setFormIsValid(
+        isEmailValid(enteredEmail) && isPasswordValid(enteredPassword)
+      );
+    }, 500);
+    return () => {
+      console.log('cleanup');
+      clearTimeout(formValidationTimeout);
+    }
   }, [enteredEmail, enteredPassword]);
 
   const emailChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
-    const email = event.target.value.trim();
-    setEnteredEmail(email);
+    setEnteredEmail(event.target.value.trim());
   };
 
   const passwordChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
-    const pass = event.target.value.trim();
-    setEnteredPassword(pass);
+    setEnteredPassword(event.target.value.trim());
   };
 
   const validateEmailHandler = () =>
