@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import Card from "../UI/Card";
 import Button from "../UI/Button";
 import styles from "./Login.module.css";
@@ -15,13 +15,17 @@ const Login: FC<LoginProps> = (props) => {
   const [passwordIsValid, setPasswordIsValid] = useState<boolean>();
   const [formIsValid, setFormIsValid] = useState<boolean>(false);
 
+  useEffect(() => {
+    setFormIsValid(
+      isEmailValid(enteredEmail) && isPasswordValid(enteredPassword)
+    );
+  }, [enteredEmail, enteredPassword]);
+
   const emailChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
     const email = event.target.value.trim();
     setEnteredEmail(email);
-
-    setFormIsValid(isEmailValid(email) && isPasswordValid(enteredPassword));
   };
 
   const passwordChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (
@@ -29,8 +33,6 @@ const Login: FC<LoginProps> = (props) => {
   ) => {
     const pass = event.target.value.trim();
     setEnteredPassword(pass);
-
-    setFormIsValid(isPasswordValid(pass) && isEmailValid(enteredEmail));
   };
 
   const validateEmailHandler = () =>
