@@ -1,4 +1,4 @@
-import React, { FC, useState, useReducer } from "react";
+import React, { FC, useState, useReducer, useEffect } from "react";
 import Card from "../UI/Card";
 import Button from "../UI/Button";
 import styles from "./Login.module.css";
@@ -63,13 +63,23 @@ const Login: FC<LoginProps> = (props) => {
 
   const [passState, dispatchPass] = useReducer(passReducer, passInitialState);
 
+  const { isValid: emailIsValid } = emailState;
+  const { isValid: passIsValid } = passState;
+
+  useEffect(() => {
+    const formValidationTimeout = setTimeout(() => {
+      setFormIsValid(!!emailIsValid && !!passIsValid);
+    }, 500);
+    return () => {
+      clearTimeout(formValidationTimeout);
+    };
+  }, [emailIsValid, passIsValid]);
+
   const emailChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
     const email: string = event.target.value.trim();
     dispatchEmail({ type: "USER_INPUT", value: email });
-
-    setFormIsValid(isEmailValid(email) && !!passState.isValid);
   };
 
   const passwordChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (
@@ -77,8 +87,6 @@ const Login: FC<LoginProps> = (props) => {
   ) => {
     const password: string = event.target.value.trim();
     dispatchPass({ type: "USER_INPUT", value: password });
-
-    setFormIsValid(!!emailState.isValid && isPasswordValid(password));
   };
 
   const validateEmailHandler = () => dispatchEmail({ type: "INPUT_BLUR" });
