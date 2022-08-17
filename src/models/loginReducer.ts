@@ -1,29 +1,43 @@
-export type EmailReducerState = {
-  value: string;
-  isValid: boolean | null;
+type EmailState = {
+  email: string;
+  emailIsValid: boolean | null;
 };
 
-export type EmailReducerAction = {
-  type: "USER_INPUT" | "INPUT_BLUR";
-  value?: string;
+type PasswordState = {
+  password: string;
+  passwordIsValid: boolean | null;
 };
 
-export type EmailReducer = (
-  state: EmailReducerState,
-  action: EmailReducerAction
-) => EmailReducerState;
-
-export type PassReducerState = {
-  value: string;
-  isValid: boolean | null;
+type FormState = {
+  formIsValid: boolean | null;
 };
 
-export type PassReducerAction = {
-  type: "USER_INPUT" | "INPUT_BLUR";
-  value?: string;
+export type LoginState = EmailState & PasswordState & FormState;
+
+type LoginActionCommon = {
+  type: string;
 };
 
-export type PassReducer = (
-  state: PassReducerState,
-  action: PassReducerAction
-) => PassReducerState;
+type LoginField = "email" | "password";
+
+type LoginActionInput = LoginActionCommon & {
+  type: "input";
+  field: LoginField;
+  payload: string;
+};
+
+type LoginActionBlur = LoginActionCommon & {
+  type: "blur";
+  field: LoginField;
+};
+
+type LoginActionFormValidation = LoginActionCommon & {
+  type: "form-validation"
+}
+
+export type LoginAction = LoginActionInput | LoginActionBlur | LoginActionFormValidation;
+
+export type LoginReducer = (
+  state: LoginState,
+  action: LoginAction
+) => LoginState;

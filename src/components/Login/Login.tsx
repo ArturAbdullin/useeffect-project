@@ -1,50 +1,55 @@
-import React, { FC, useState, useReducer, useEffect } from "react";
+import React, { FC, useReducer, useEffect } from "react";
 import Card from "../UI/Card";
 import Button from "../UI/Button";
 import styles from "./Login.module.css";
 import { isEmailValid, isPasswordValid } from "../../models/Validators";
-import * as LoginReducer from "../../models/loginReducer";
+import { LoginState, LoginReducer } from "../../models/loginReducer";
 
-const emailInitialState: LoginReducer.EmailReducerState = {
-  value: "",
-  isValid: null,
+const loginInitialState: LoginState = {
+  email: "",
+  emailIsValid: null,
+  password: "",
+  passwordIsValid: null,
+  formIsValid: null,
 };
 
-const passInitialState: LoginReducer.PassReducerState = {
-  value: "",
-  isValid: null,
-};
-
-const emailReducer: LoginReducer.EmailReducer = (state, action) => {
-  if (action.type === "USER_INPUT") {
-    const newEmailState: LoginReducer.EmailReducerState = {
-      value: action.value ?? "",
-      isValid: isEmailValid(action.value ?? ""),
-    };
-    return newEmailState;
-  } else if (action.type === "INPUT_BLUR") {
-    const newEmailState: LoginReducer.EmailReducerState = {
-      value: state.value,
-      isValid: isEmailValid(state.value),
-    };
-    return newEmailState;
-  }
-  return state;
-};
-
-const passReducer: LoginReducer.PassReducer = (state, action) => {
-  if (action.type === "USER_INPUT") {
-    const newPassState: LoginReducer.PassReducerState = {
-      value: action.value ?? "",
-      isValid: isPasswordValid(action.value ?? ""),
-    };
-    return newPassState;
-  } else if (action.type === "INPUT_BLUR") {
-    const newPassState: LoginReducer.PassReducerState = {
-      value: state.value,
-      isValid: isPasswordValid(state.value),
-    };
-    return newPassState;
+const loginReducer: LoginReducer = (state, action) => {
+  switch (action.type) {
+    case "input":
+      switch (action.field) {
+        case "email":
+          return {
+            ...state,
+            email: action.payload,
+            emailIsValid: isEmailValid(action.payload),
+          };
+        case "password":
+          return {
+            ...state,
+            password: action.payload,
+            passwordIsValid: isPasswordValid(action.payload),
+          };
+      }
+      break;
+    case "blur":
+      switch (action.field) {
+        case "email":
+          return {
+            ...state,
+            emailIsValid: isEmailValid(state.email),
+          };
+        case "password":
+          return {
+            ...state,
+            passwordIsValid: isPasswordValid(state.password),
+          };
+      }
+      break;
+    case "form-validation":
+      return {
+        ...state,
+        formIsValid: state.emailIsValid && state.passwordIsValid,
+      };
   }
   return state;
 };
@@ -54,82 +59,75 @@ type LoginProps = {
 };
 
 const Login: FC<LoginProps> = (props) => {
-  const [formIsValid, setFormIsValid] = useState<boolean>(false);
-
-  const [emailState, dispatchEmail] = useReducer(
-    emailReducer,
-    emailInitialState
+  const [loginState, dispatchLogin] = useReducer(
+    loginReducer,
+    loginInitialState
   );
 
-  const [passState, dispatchPass] = useReducer(passReducer, passInitialState);
-
-  const { isValid: emailIsValid } = emailState;
-  const { isValid: passIsValid } = passState;
+  const { emailIsValid } = loginState;
+  const { passwordIsValid } = loginState;
 
   useEffect(() => {
-    const formValidationTimeout = setTimeout(() => {
-      setFormIsValid(!!emailIsValid && !!passIsValid);
-    }, 500);
-    return () => {
-      clearTimeout(formValidationTimeout);
-    };
-  }, [emailIsValid, passIsValid]);
+    dispatchLogin({ type: "form-validation" });
+  }, [emailIsValid, passwordIsValid]);
 
   const emailChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
     const email: string = event.target.value.trim();
-    dispatchEmail({ type: "USER_INPUT", value: email });
+    dispatchLogin({ type: "input", field: "email", payload: email });
   };
 
   const passwordChangeHandler: React.ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
     const password: string = event.target.value.trim();
-    dispatchPass({ type: "USER_INPUT", value: password });
+    dispatchLogin({ type: "input", field: "password", payload: password });
   };
 
-  const validateEmailHandler = () => dispatchEmail({ type: "INPUT_BLUR" });
+  const validateEmailHandler = () =>
+    dispatchLogin({ type: "blur", field: "email" });
 
-  const validatePasswordHandler = () => dispatchPass({ type: "INPUT_BLUR" });
+  const validatePasswordHandler = () =>
+    dispatchLogin({ type: "blur", field: "password" });
 
   const submitHandler: React.FormEventHandler = (event) => {
     event.preventDefault();
-    props.onLogin(emailState.value, passState.value);
+    props.onLogin(loginState.email, loginState.password);
   };
   return (
     <Card className={styles.login}>
       <form onSubmit={submitHandler}>
         <div
           className={`${styles.control} ${
-            emailState.isValid === false ? styles.invalid : ""
+            loginState.emailIsValid === false ? styles.invalid : ""
           }`}
         >
           <label htmlFor="email">E-Mail</label>
           <input
             type="email"
             id="email"
-            value={emailState.value}
+            value={loginState.email}
             onChange={emailChangeHandler}
             onBlur={validateEmailHandler}
           />
         </div>
         <div
           className={`${styles.control} ${
-            passState.isValid === false ? styles.invalid : ""
+            loginState.passwordIsValid === false ? styles.invalid : ""
           }`}
         >
           <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
-            value={passState.value}
+            value={loginState.password}
             onChange={passwordChangeHandler}
             onBlur={validatePasswordHandler}
           />
         </div>
         <div className={styles.actions}>
-          <Button type="submit" disabled={!formIsValid}>
+          <Button type="submit" disabled={!loginState.formIsValid}>
             Login
           </Button>
         </div>
