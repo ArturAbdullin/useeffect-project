@@ -5,6 +5,7 @@ import styles from "./Login.module.css";
 import { isEmailValid, isPasswordValid } from "../../models/Validators";
 import { LoginState, LoginReducer } from "../../models/loginReducer";
 import { AuthContext } from "../../contexts/auth-context";
+import Input from "../UI/Input";
 
 const loginInitialState: LoginState = {
   email: "",
@@ -97,34 +98,24 @@ const Login: FC = () => {
   return (
     <Card className={styles.login}>
       <form onSubmit={submitHandler}>
-        <div
-          className={`${styles.control} ${
-            loginState.emailIsValid === false ? styles.invalid : ""
-          }`}
-        >
-          <label htmlFor="email">E-Mail</label>
-          <input
-            type="email"
-            id="email"
-            value={loginState.email}
-            onChange={emailChangeHandler}
-            onBlur={validateEmailHandler}
-          />
-        </div>
-        <div
-          className={`${styles.control} ${
-            loginState.passwordIsValid === false ? styles.invalid : ""
-          }`}
-        >
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={loginState.password}
-            onChange={passwordChangeHandler}
-            onBlur={validatePasswordHandler}
-          />
-        </div>
+        <Input
+          type="email"
+          id="email"
+          value={loginState.email}
+          label="E-Mail"
+          isValid={loginState.emailIsValid}
+          onChange={emailChangeHandler}
+          onBlur={validateEmailHandler}
+        />
+        <Input
+          type="password"
+          id="password"
+          value={loginState.password}
+          label="Password"
+          isValid={loginState.passwordIsValid}
+          onChange={passwordChangeHandler}
+          onBlur={validatePasswordHandler}
+        />
         <div className={styles.actions}>
           <Button type="submit" disabled={!loginState.formIsValid}>
             Login
