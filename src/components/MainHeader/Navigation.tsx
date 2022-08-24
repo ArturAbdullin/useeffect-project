@@ -1,11 +1,8 @@
 import React, { FC, useContext } from "react";
 import AuthContext from "../../contexts/auth-context";
-import { AuthenticationProps } from "../../models/AuthenticationProps";
 import styles from "./Navigation.module.css";
 
-type NavigationProps = {} & AuthenticationProps;
-
-const Navigation: FC<NavigationProps> = (props) => {
+const Navigation: FC = () => {
   const ctx = useContext(AuthContext);
   return (
     <nav className={styles.nav}>
@@ -19,7 +16,7 @@ const Navigation: FC<NavigationProps> = (props) => {
               <a href="/">Admin</a>
             </li>
             <li>
-              <button onClick={props.onLogout}>Logout</button>
+              <button onClick={ctx.onLogout}>Logout</button>
             </li>
           </>
         )}
