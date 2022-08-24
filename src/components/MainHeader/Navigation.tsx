@@ -1,13 +1,13 @@
 import React, { FC, useContext } from "react";
-import AuthContext from "../../contexts/auth-context";
+import { AuthContext } from "../../contexts/auth-context";
 import styles from "./Navigation.module.css";
 
 const Navigation: FC = () => {
-  const ctx = useContext(AuthContext);
+  const authCtx = useContext(AuthContext);
   return (
     <nav className={styles.nav}>
       <ul>
-        {ctx.isLoggedIn && (
+        {authCtx.isLoggedIn && (
           <>
             <li>
               <a href="/">Users</a>
@@ -16,7 +16,7 @@ const Navigation: FC = () => {
               <a href="/">Admin</a>
             </li>
             <li>
-              <button onClick={ctx.onLogout}>Logout</button>
+              <button onClick={authCtx.onLogout}>Logout</button>
             </li>
           </>
         )}

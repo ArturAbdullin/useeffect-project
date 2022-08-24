@@ -1,9 +1,10 @@
-import React, { FC, useReducer, useEffect } from "react";
+import React, { FC, useReducer, useEffect, useContext } from "react";
 import Card from "../UI/Card";
 import Button from "../UI/Button";
 import styles from "./Login.module.css";
 import { isEmailValid, isPasswordValid } from "../../models/Validators";
 import { LoginState, LoginReducer } from "../../models/loginReducer";
+import { AuthContext } from "../../contexts/auth-context";
 
 const loginInitialState: LoginState = {
   email: "",
@@ -54,15 +55,13 @@ const loginReducer: LoginReducer = (state, action) => {
   return state;
 };
 
-type LoginProps = {
-  onLogin: (email: string, password: string) => void;
-};
-
-const Login: FC<LoginProps> = (props) => {
+const Login: FC = () => {
   const [loginState, dispatchLogin] = useReducer(
     loginReducer,
     loginInitialState
   );
+
+  const authCtx = useContext(AuthContext);
 
   const { emailIsValid } = loginState;
   const { passwordIsValid } = loginState;
@@ -93,7 +92,7 @@ const Login: FC<LoginProps> = (props) => {
 
   const submitHandler: React.FormEventHandler = (event) => {
     event.preventDefault();
-    props.onLogin(loginState.email, loginState.password);
+    authCtx.onLogin(loginState.email, loginState.password);
   };
   return (
     <Card className={styles.login}>
