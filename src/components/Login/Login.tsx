@@ -5,7 +5,7 @@ import styles from "./Login.module.css";
 import { isEmailValid, isPasswordValid } from "../../models/Validators";
 import { LoginState, LoginReducer } from "../../models/loginReducer";
 import { AuthContext } from "../../contexts/auth-context";
-import Input from "../UI/Input";
+import Input, { InputRefType } from "../UI/Input";
 
 const loginInitialState: LoginState = {
   email: "",
@@ -91,8 +91,8 @@ const Login: FC = () => {
   const validatePasswordHandler = () =>
     dispatchLogin({ type: "blur", field: "password" });
 
-  const emailInputRef = useRef<HTMLInputElement>(null);
-  const passwordInputRef = useRef<HTMLInputElement>(null);
+  const emailInputRef = useRef<HTMLInputElement & InputRefType>(null);
+  const passwordInputRef = useRef<HTMLInputElement & InputRefType>(null);
 
   const submitHandler: React.FormEventHandler = (event) => {
     event.preventDefault();
@@ -100,10 +100,10 @@ const Login: FC = () => {
       authCtx.onLogin(loginState.email, loginState.password);
     } else if (!loginState.emailIsValid) {
       dispatchLogin({ type: "blur", field: "email" });
-      emailInputRef.current?.focus();
+      emailInputRef.current?.focusInput();
     } else {
       dispatchLogin({ type: "blur", field: "password" });
-      passwordInputRef.current?.focus();
+      passwordInputRef.current?.focusInput();
     }
   };
   return (
@@ -120,7 +120,7 @@ const Login: FC = () => {
           onBlur={validateEmailHandler}
         />
         <Input
-        ref={passwordInputRef}
+          ref={passwordInputRef}
           type="password"
           id="password"
           value={loginState.password}
