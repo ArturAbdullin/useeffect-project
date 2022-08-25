@@ -1,4 +1,4 @@
-import React, { FC, useReducer, useEffect, useContext } from "react";
+import React, { FC, useReducer, useEffect, useContext, useRef } from "react";
 import Card from "../UI/Card";
 import Button from "../UI/Button";
 import styles from "./Login.module.css";
@@ -91,14 +91,26 @@ const Login: FC = () => {
   const validatePasswordHandler = () =>
     dispatchLogin({ type: "blur", field: "password" });
 
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+
   const submitHandler: React.FormEventHandler = (event) => {
     event.preventDefault();
-    authCtx.onLogin(loginState.email, loginState.password);
+    if (loginState.formIsValid) {
+      authCtx.onLogin(loginState.email, loginState.password);
+    } else if (!loginState.emailIsValid) {
+      dispatchLogin({ type: "blur", field: "email" });
+      emailInputRef.current?.focus();
+    } else {
+      dispatchLogin({ type: "blur", field: "password" });
+      passwordInputRef.current?.focus();
+    }
   };
   return (
     <Card className={styles.login}>
       <form onSubmit={submitHandler}>
         <Input
+          ref={emailInputRef}
           type="email"
           id="email"
           value={loginState.email}
@@ -108,6 +120,7 @@ const Login: FC = () => {
           onBlur={validateEmailHandler}
         />
         <Input
+        ref={passwordInputRef}
           type="password"
           id="password"
           value={loginState.password}
@@ -117,9 +130,7 @@ const Login: FC = () => {
           onBlur={validatePasswordHandler}
         />
         <div className={styles.actions}>
-          <Button type="submit" disabled={!loginState.formIsValid}>
-            Login
-          </Button>
+          <Button type="submit">Login</Button>
         </div>
       </form>
     </Card>

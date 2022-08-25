@@ -4,7 +4,6 @@ import styles from "./Button.module.css";
 type ButtonProps = {
   children?: React.ReactNode;
   className?: string;
-  disabled?: boolean;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   type?: "button" | "submit";
 };
@@ -12,7 +11,6 @@ type ButtonProps = {
 const Button: FC<ButtonProps> = ({
   children,
   className = "",
-  disabled = false,
   onClick,
   type = "button",
 }) => {
@@ -21,7 +19,6 @@ const Button: FC<ButtonProps> = ({
       type={type}
       className={`${styles.button} ${className}`}
       onClick={onClick}
-      disabled={disabled}
     >
       {children}
     </button>
